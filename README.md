@@ -1,52 +1,91 @@
-# SkyGuard AI —  Demo
-#  AI/ML-Based Intelligent Anomaly Detection for AWS
-# Ministry of Earth Sciences | India Meteorological Department
+# SkyGuard AI — National AWS Intelligence & Disaster Early Warning System
+### Ministry of Earth Sciences (MoES) | India Meteorological Department (IMD)
+*Smart India Hackathon 2026 (Problem Statement 26073)*
 
-## 1. What is this?
+---
 
-SkyGuard AI is a small, offline desktop demonstration prototype that simulates an
-Automatic Weather Station (AWS) and uses a lightweight Isolation Forest machine
-learning model to detect abnormal temperature, pressure, and humidity readings.
-It is built for judges at the hackathon — not for production weather forecasting.
+## 1. Executive Summary & What is SkyGuard AI?
 
-## 2. Problem being solved
+SkyGuard AI is an advanced, fully offline desktop and command-line intelligent monitoring platform designed for Automatic Weather Stations (AWS). It combines unsupervised machine learning (Isolation Forest), explainable AI (XAI), Optical Fibre Distributed Acoustic Sensing (DAS), solar microgrid telemetry, multi-station mesh networking, and a privacy-first offline AI assistant to ensure robust, real-time meteorological monitoring and natural disaster early warning.
 
-AWS sensors can malfunction (frozen values, spikes, communication errors).
-Incorrect observations mislead weather forecasts and disaster warnings.
-This demo shows how AI can flag those errors and explain them clearly.
+---
 
-## 3. How it works
+## 2. Core Features & Architecture
 
-- A synthetic AWS simulator generates realistic temperature, pressure, and humidity.
-- The Isolation Forest learns normal patterns from synthetic historical data.
-- Each new reading is scored: normal vs. anomaly.
-- If abnormal, the system shows type, severity (HIGH/MEDIUM), confidence (%),
-  explanation, corrected estimate, and updated sensor health.
+### 🤖 1. AI/ML Intelligent Anomaly Detection
+- **Isolation Forest Model:** Unsupervised outlier detection trained on synthetic meteorological data with realistic multivariate physical covariance (temperature, pressure, humidity).
+- **Multi-Rule Checks:** Point-level anomalies, frozen-streak detection, and communication dropouts.
+- **Dynamic Re-calibration:** Adapts baseline models across 12 diverse geographical station profiles.
 
-## 4. AI/ML approach
+### 🔍 2. Explainable AI (XAI) & Self-Healing Imputation
+- **SHAP-Style Feature Attribution:** Quantifies the percentage contribution of each metric (Temperature, Pressure, Humidity) to flagged anomalies.
+- **Self-Healing Estimator:** Computes suggested corrected readings based on historical rolling baselines and spatial-temporal imputation.
+- **Sensor Health & RUL (Remaining Useful Life):** Tracks degradation index and maintenance schedules.
 
-- **Model:** scikit-learn Isolation Forest (unsupervised, lightweight).
-- **Training:** 2,000 synthetic normal observations generated locally.
-- **Detection:** Point-level anomalies + frozen-streak rule + communication check.
-- **Explainability:** Rule-based explanation mapped to feature deviations.
+### 🗺️ 3. Multi-Station Regional Profiles (12 Stations)
+Simulates diverse climatic zones across India with station-specific elevations and optical fibre backhaul distances:
+- **AWS-101:** New Delhi / Safdarjung (Subtropical Plains)
+- **AWS-204:** Leh / High-Altitude (High-Altitude Cold Desert)
+- **AWS-308:** Mumbai / Colaba Marine (Coastal Maritime)
+- **AWS-415:** Jaisalmer / Thar Desert (Arid Desert Zone)
+- **AWS-512:** Kolkata / Alipore Marine (Gangetic Delta)
+- **AWS-620:** Bengaluru / Hebbal Deccan (Deccan Plateau)
+- **AWS-714:** Chennai / Nungambakkam Coastal (Tropical East Coast)
+- **AWS-822:** Guwahati / Brahmaputra Valley (North-East River Basin)
+- **AWS-930:** Srinagar / Kashmir Valley (Himalayan Alpine)
+- **AWS-104:** Bhopal / Central Plateau (Vindhya Plateau)
+- **AWS-116:** Shimla / Western Himalayas (Mountain Ridge)
+- **AWS-128:** Port Blair / Andaman Islands (Island Maritime)
 
-## 5. How anomaly detection works (simplified)
+### 🧶 4. Optical Fibre Distributed Acoustic Sensing (DAS) & Backhaul
+- Monitors underground optical fibre health linking weather stations.
+- Tracks OTDR attenuation, signal-to-noise ratio (SNR), and acoustic vibration/seismic strain anomalies.
 
-The Isolation Forest isolates outliers by randomly splitting data.
-If an observation requires very few splits, it is far from normal and flagged.
-For frozen sensors, we additionally check when temperature repeats exactly.
+### 🌪️ 5. Natural Disaster Early Warning & XAI
+- Real-time risk assessment and automated alerts for extreme weather events: Cloudbursts, Cyclones, Heatwaves, Flash Floods, and Landslides.
 
-## 6. How sensor faults are simulated
+### ⚡ 6. Solar Microgrid Power Status
+- Monitors autonomous solar-battery power generation, battery State of Charge (SoC), voltage stability, and microgrid health to ensure uninterrupted AWS uptime in remote locations.
 
-Buttons inject faults one at a time so you can show each case clearly:
-- Temperature Spike (55°C)
-- Frozen Sensor (same value repeated)
-- Humidity Fault (near 0%)
-- Pressure Fault (850 hPa)
-- Communication Error (no data)
+### 🌐 7. Multi-Station Mesh Network Map
+- Visualizes robust peer-to-peer radio/fibre mesh connectivity between regional IMD stations, ensuring fault-tolerant data routing during terrestrial link failures.
 
-## 7. How to install
+### 🚨 8. Automated Webhooks & NDMA Dispatch Log
+- Instantaneous dispatch log and mock webhook integration for alerting the National Disaster Management Authority (NDMA) and regional disaster response cells upon critical severity anomalies.
 
+### 💬 9. Privacy-First Offline AI Assistant / Chatbot (`chatbot/`)
+- Fully offline, air-gapped data analysis assistant (`google/flan-t5-base` + Pandas).
+- Supports CSV, TSV, Excel (`.xlsx`, `.xls`), JSON, and Parquet datasets.
+- **Strict Privacy Guarantees:** Data is copied to isolated scratch storage (`.chatbot_scratch/`), environment variables enforce complete network isolation (`TRANSFORMERS_OFFLINE=1`, `HF_HUB_OFFLINE=1`), and a robust `atexit` handler securely overwrites all temporary data files with zeros and deletes them upon exit.
+
+---
+
+## 3. Project Structure
+
+```
+SkyGuard-Aws/
+├── main.py               # Main GUI application (Real-time monitor, Mesh map, Chatbot tab)
+├── aws_simulator.py      # AWS sensor simulation, station profiles, fibre & solar telemetry
+├── anomaly_detector.py   # Isolation Forest ML model, XAI feature attribution, imputation
+├── chatbot/              # Standalone privacy-first offline AI data analyst CLI
+│   ├── chatbot.py        # CLI interface for dataset querying
+│   ├── ai_engine.py      # Dual-engine rule-based + local transformer model
+│   ├── data_manager.py   # Secure data ingest, purge, and zero-wipe exit handler
+│   └── sample_data.csv   # Sample dataset
+├── tests/                # Unit tests for simulator and anomaly detector
+├── DEMO_SCRIPT.md        # Word-for-word judge presentation script
+├── requirements.txt      # Python dependencies
+└── build_exe.bat         # PyInstaller build script for standalone Windows EXE
+```
+
+---
+
+## 4. Installation & Quick Start
+
+### Prerequisites
+- Python 3.10+ installed.
+
+### Setup & Run GUI Application
 ```cmd
 python -m venv venv
 venv\Scripts\activate
@@ -54,38 +93,31 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Requirements: numpy, scikit-learn, matplotlib. Tkinter is included with Python.
+### Run Standalone Chatbot CLI
+```cmd
+cd chatbot
+pip install -r requirements.txt
+python chatbot.py
+```
 
-## 8. How to build the EXE
+---
 
+## 5. Building the Standalone Executable (.EXE)
+
+To package SkyGuard AI into a self-contained executable for offline deployment:
 ```cmd
 build_exe.bat
 ```
+This generates `dist\SkyGuardAI.exe`, which can run on any Windows machine without requiring Python or internet connectivity.
 
-This creates `dist\SkyGuardAI.exe`. You can move it to another Windows PC
-without Python installed — it runs fully offline.
+---
 
-If PyInstaller fails, install it first:
-```cmd
-pip install pyinstaller
-```
+## 6. Judge Demonstration Guide (1-Minute Sequence)
 
-## 9. How to demonstrate to judges (1-minute sequence)
-
-1. Open `SkyGuardAI.exe` (or `python main.py`).
-2. Point to header and sensor cards — explain AWS simulation.
-3. Click **START MONITORING** — show values changing live.
-4. Click **Temperature Spike** — show status flip to 🔴 ANOMALY.
-5. Point to Severity (HIGH), Confidence (~95%), and Explanation.
-6. Point to **Suggested Corrected Reading** (AI estimate).
-7. Show Sensor Health drop, event log entry.
-8. Click **DEMO MODE** (optional) — let it run 30-60 seconds automatically.
-9. Close by summarizing: "AI detects abnormality, explains why, estimates correction, tracks health — all offline, no cloud needed."
-
-## Files
-
-- `main.py` — GUI and orchestration
-- `aws_simulator.py` — sensor simulation
-- `anomaly_detector.py` — ML + explainability
-- `build_exe.bat` — executable build
-- `DEMO_SCRIPT.md` — word-for-word judge script
+1. **Launch App:** Run `python main.py` or open `SkyGuardAI.exe`.
+2. **Select Station:** Choose any regional station profile from the dropdown (e.g., New Delhi, Leh, Mumbai).
+3. **Start Monitoring:** Click **START MONITORING** to stream live telemetry.
+4. **Inject Fault:** Click **Temperature Spike** or **Frozen Sensor** to trigger an anomaly.
+5. **Inspect XAI:** Observe the 🔴 ANOMALY status, High Severity, Confidence (~95%), SHAP-style explanation, and Suggested Corrected Reading.
+6. **Explore Tabs:** Check out the **Multi-Station Mesh Network Map** and **Privacy-First AI Assistant** tabs.
+7. **Demo Mode:** Click **🎬 DEMO MODE** for an automated walk-through of the complete anomaly lifecycle.
